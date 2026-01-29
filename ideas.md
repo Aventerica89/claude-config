@@ -121,6 +121,53 @@ op item edit "Supabase" "CLI Tokens.Token Name[password]=value"
 
 ---
 
+### JB Cloud App Tracker - Maintenance Command Scheduling
+**Added:** 2026-01-28
+**Status:** Idea
+**Project:** https://github.com/Aventerica89/jb-cloud-app-tracker
+
+Integration with Claude Code commands to track and schedule maintenance tasks across all apps.
+
+**Core Problem:**
+Need to track when security reviews, code reviews, and maintenance commands were last run on each app, and when they're due next.
+
+**Claude Command Integration:**
+- `/security` - Security audit and vulnerability scan
+- `/code-review` - Code quality and best practices review
+- `/structure` - Architecture and file organization review
+- `/test-coverage` - Test coverage analysis
+- `/dependencies` - Dependency updates and security patches
+- `/performance` - Performance profiling and optimization
+
+**Features:**
+- Maintenance checklist per app with status tracking
+- Last run timestamps for each command type
+- Scheduled reminders (weekly/monthly/quarterly)
+- One-click "Run maintenance" button that executes commands in Claude
+- History log of all maintenance runs with results
+- Batch operations - run security audit on all apps at once
+- Priority flagging for apps that haven't been reviewed recently
+
+**Scheduling System:**
+- Weekly: Security scans, dependency checks
+- Monthly: Code reviews, test coverage analysis
+- Quarterly: Architecture reviews, performance audits
+- Custom: User-defined schedules per app or command type
+
+**Integration Points:**
+- Claude MCP server to trigger commands from app tracker UI
+- Store command results/reports in app tracker database
+- Dashboard view showing maintenance health across all apps
+- Notifications when maintenance is overdue
+
+**UI Components:**
+- Maintenance calendar view showing scheduled tasks
+- Per-app maintenance checklist with status badges
+- Bulk action toolbar for running commands across multiple apps
+- Command history timeline per app
+
+---
+
 ### JB Cloud Docs - UI/UX Improvements
 **Added:** 2026-01-27
 **Status:** In Progress (Quick Wins)
@@ -201,6 +248,85 @@ Ideas for faster project bootstrapping:
 ## APIs & Services
 
 (Empty - add ideas with `/ideas add`)
+
+---
+
+## MacOS/iOS Apps
+
+### Apple Shortcuts Manager
+**Added:** 2026-01-28
+**Status:** Idea
+
+A comprehensive shortcuts management app similar to links/artifacts manager, providing visualization, versioning, and AI-powered assistance for Apple Shortcuts.
+
+**Core Features:**
+- Screenshot capture of shortcut processes
+- Text/image layout visualization of workflow steps
+- iCloud link generation for easy sharing
+- Version tracking and history
+- Built-in AI for troubleshooting shortcuts
+
+**Potential Features:**
+- Automatic shortcut building from descriptions (iOS/MacOS app)
+- Shortcut marketplace/discovery
+- Backup and restore functionality
+- Collaborative editing and sharing
+
+**Platform:**
+- iOS app for mobile management
+- MacOS app for desktop workflow
+- Cross-platform sync via iCloud
+
+---
+
+### Smart Calorie & Macro Tracker
+**Added:** 2026-01-28
+**Status:** Idea
+
+A comprehensive nutrition tracking system with ingredient-to-meal hierarchy, AI-powered calorie estimation, and drag-and-drop meal planning.
+
+**Core Hierarchy:**
+- **Ingredients** - Base items (milk, protein powder, greek yogurt, etc.)
+- **Recipes** - Built from ingredients with calculated nutrition
+- **Meals** - Combine recipes/ingredients with custom portions
+
+**Meal Builder Features:**
+- Template system for regular meals (morning shake, burrito, etc.)
+- Variable ingredient amounts (1-2 cups milk, 2-3 scoops protein)
+- Quick meal builder with common ingredient picker
+- Save custom meal templates for reuse
+- Drag-and-drop meals into daily calendar
+
+**Smart Features:**
+- Photo-based calorie estimation with AI
+- Weight scale integration for precise measurements
+- Claude AI recipe import with automatic calorie calculation
+- Recipe URL import (auto-parse ingredients and nutrition)
+
+**Walmart Integration:**
+- Add ingredients to Walmart delivery cart
+- Shopping list generation from meal plans
+- Automatic grocery suggestions based on meal schedule
+
+**Tracking & Analytics:**
+- Daily calorie and macro tracking
+- Macro breakdown pie charts (protein/carbs/fats)
+- Weekly/monthly trend graphs
+- Meal history and favorites
+
+**Cross-Platform:**
+- **iOS app** - Primary interface with drag-and-drop meal planning
+- **MacOS app** - Desktop meal prep and recipe management
+- **Web app** - Access from any device, recipe imports
+- iCloud sync across all platforms
+
+**User Experience:**
+Example workflow:
+1. Create "Morning Shake" template with variable options
+2. Each morning: Open app, adjust portions (2 or 3 scoops?)
+3. Drag template into today's breakfast slot
+4. Auto-updates daily calories and macros
+5. View progress in graphs section
 
 ---
 

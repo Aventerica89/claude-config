@@ -15,6 +15,14 @@
       "saved": "2026-01-28T12:45:00Z",
       "file": "env-var-assistant-2026-01-28.md",
       "summary": "Safari extension complete, hide/restore feature, docs synced"
+    },
+    {
+      "name": "1p-mcp-testing-2026-01-28",
+      "project": "1Password MCP Testing",
+      "branch": "N/A",
+      "saved": "2026-01-28T21:05:00Z",
+      "file": "1p-mcp-testing-2026-01-28.md",
+      "summary": "Tested deploy_env_vars across Vercel/Cloudflare/GitHub, documented workarounds"
     }
   ]
 }

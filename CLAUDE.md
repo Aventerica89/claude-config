@@ -84,6 +84,7 @@ Detailed guidelines are in `~/.claude/rules/`:
 | patterns.md | API response, repository patterns |
 | performance.md | Model selection, context management |
 | env-vars.md | Auto-deploy env vars to platforms |
+| string-length.md | **CRITICAL:** Prevent long string errors, max lengths, extraction patterns |
 
 ---
 
@@ -103,6 +104,66 @@ Located in `~/.claude/agents/`:
 | refactor-cleaner | Dead code cleanup |
 | doc-updater | Documentation updates |
 | env-deployer | Auto-deploy env vars to platforms |
+
+---
+
+## String Length Limits (CRITICAL)
+
+**ALWAYS prevent long string errors by following these rules:**
+
+### Maximum String Lengths:
+- **Inline strings in code**: 500 characters max
+- **Template literals**: 1000 characters max
+- **HTML/SVG inline**: Extract to separate files/constants
+- **Error messages**: 200 characters max
+- **Notification messages**: 100 characters max
+
+### Required Actions:
+1. **Extract long content to constants/files:**
+   ```javascript
+   // WRONG: 2000 character inline string
+   const html = `<div>...</div>`  // massive template
+
+   // CORRECT: Extract to constant or file
+   const HTML_TEMPLATE = `...`  // at top of file
+   // OR import from separate .html file
+   ```
+
+2. **Break up large templates:**
+   ```javascript
+   // WRONG: Single massive string
+   return `<html><body>...thousands of chars...</body></html>`
+
+   // CORRECT: Compose from smaller parts
+   return composeTemplate({
+     header: HEADER_TEMPLATE,
+     body: BODY_TEMPLATE,
+     footer: FOOTER_TEMPLATE
+   })
+   ```
+
+3. **Use external files for:**
+   - HTML templates > 500 chars
+   - SVG icons (use sprite sheets or separate files)
+   - CSS styles (separate .css files)
+   - Large JSON/config data
+
+4. **Validate before committing:**
+   - Check for strings > 500 chars in any single line
+   - Grep for long template literals: `grep -n '`.{500,}' *.js`
+   - Refactor any violations before commit
+
+### Why This Matters:
+- Prevents API errors ("text content blocks must be non-empty")
+- Improves code readability
+- Reduces context window usage
+- Makes debugging easier
+- Prevents copy-paste errors
+
+**If you see a long string error, IMMEDIATELY:**
+1. Identify the long strings in recent changes
+2. Extract them to constants or separate files
+3. Update this rule if new patterns emerge
 
 ---
 
