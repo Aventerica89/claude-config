@@ -1,0 +1,26 @@
+{
+  "name": "Claude Codex",
+  "short_name": "Codex",
+  "description": "The Universal Configuration System for Claude Code",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0b",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["developer tools", "productivity"],
+  "orientation": "portrait-primary"
+}

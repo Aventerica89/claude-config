@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header';
+import Hero from '../components/Hero';
+import Features from '../components/Features';
+import Integrations from '../components/Integrations';
+---
+
+<BaseLayout title="Claude Codex - Your AI Development Command Center">
+  <Header client:load />
+  <main>
+    <Hero client:load />
+    <Features client:visible />
+    <Integrations client:visible />
+
+    <!-- CTA Section -->
+    <section class="py-24">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-4xl md:text-5xl font-bold mb-4">
+          Ready to Get Started?
+        </h2>
+        <p class="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+          Install Claude Codex and supercharge your AI-assisted development workflow.
+        </p>
+        <div class="bg-card border border-border rounded-xl p-6 max-w-2xl mx-auto">
+          <code class="text-sm md:text-base font-mono text-violet-400">
+            claude plugin install github:Aventerica89/claude-codex
+          </code>
+        </div>
+        <p class="mt-4 text-sm text-muted-foreground">
+          Or clone directly:
+          <code class="text-violet-400 ml-2">git clone https://github.com/Aventerica89/claude-codex.git ~/.claude</code>
+        </p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-border">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
+                <path d="M6 10a6 6 0 0 0 12 0" />
+              </svg>
+            </div>
+            <span class="text-sm text-muted-foreground">Claude Codex</span>
+          </div>
+          <div class="flex items-center gap-6 text-sm text-muted-foreground">
+            <a href="https://github.com/Aventerica89/claude-codex" class="hover:text-foreground transition-colors">GitHub</a>
+            <a href="#" class="hover:text-foreground transition-colors">Documentation</a>
+            <a href="#" class="hover:text-foreground transition-colors">Privacy</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+</BaseLayout>
