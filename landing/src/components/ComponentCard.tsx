@@ -47,6 +47,19 @@ const complexityLabels = {
   advanced: "Advanced",
 }
 
+const registryDisplayNames: Record<string, string> = {
+  magicui: "Magic UI",
+  aceternity: "Aceternity",
+  "shadcn-extensions": "Extensions",
+  originui: "Origin UI",
+}
+
+const registrySourceLabels: Record<string, string> = {
+  radix: "Radix",
+  shadcn: "shadcn",
+  custom: "Custom",
+}
+
 export function ComponentCard({
   component,
   isSelected,
@@ -120,10 +133,7 @@ export function ComponentCard({
                 registryBadgeColors[registryId] || "bg-muted text-muted-foreground"
               )}
             >
-              {registryId === "magicui" ? "Magic UI" :
-               registryId === "aceternity" ? "Aceternity" :
-               registryId === "shadcn-extensions" ? "Extensions" :
-               registryId === "originui" ? "Origin UI" : registryId}
+              {registryDisplayNames[registryId] || registryId}
             </span>
           )}
 
@@ -134,8 +144,7 @@ export function ComponentCard({
               registryColors[component.registrySource]
             )}
           >
-            {component.registrySource === "radix" ? "Radix" :
-             component.registrySource === "shadcn" ? "shadcn" : "Custom"}
+            {registrySourceLabels[component.registrySource]}
           </span>
 
           {/* Category */}
@@ -185,7 +194,7 @@ export function ComponentCard({
 
 // Mini visual previews for components
 function ComponentPreview({ componentId }: { componentId: string }) {
-  const baseId = componentId.replace(/^(magic-|aceternity-|ext-|origin-)/, "")
+  const baseId = componentId.replace(/^(magic|aceternity|ext|origin)-/, "")
 
   const previews: Record<string, React.ReactNode> = {
     button: (
@@ -366,7 +375,7 @@ function ComponentPreview({ componentId }: { componentId: string }) {
 
   return previews[baseId] || previews[componentId] || (
     <div className="text-[10px] text-muted-foreground font-medium px-2 text-center">
-      {componentId.replace(/^(magic-|aceternity-|ext-|origin-)/, "").replace(/-/g, " ")}
+      {componentId.replace(/^(magic|aceternity|ext|origin)-/, "").replace(/-/g, " ")}
     </div>
   )
 }
