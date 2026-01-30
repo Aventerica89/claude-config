@@ -495,10 +495,10 @@ Group commands by category:
 | Category | Commands |
 |----------|----------|
 | Development | /tdd, /plan, /code-review, /fix-issue |
-| Git & Workflow | /commit, /standup |
+| Git & Workflow | /commit, /create-pr, /create-release, /setup-github-actions, /standup |
 | Session | /context-save, /context-restore, /end, /remind |
-| Quality | /deploy-check, /deps-audit, /security-review |
-| Documentation | /jbdocs, /update-docs |
+| Quality | /deploy-check, /deps-audit, /security-review, /secrets-audit |
+| Documentation | /jbdocs, /update-docs, /env-example |
 | Project | /new-project |
 
 ### Output
