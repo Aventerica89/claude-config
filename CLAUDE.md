@@ -213,6 +213,22 @@ Located in `~/.claude/agents/`:
 
 ---
 
+## Documentation
+
+Reference docs are in `docs/`:
+
+| Doc File | Contents |
+|----------|----------|
+| shadcn-ui.md | shadcn/ui component library - all components, CLI commands, installation guides |
+
+**Usage:** When working with shadcn/ui or setting up new projects, reference `docs/shadcn-ui.md` for:
+- Component installation commands (`npx shadcn@latest add <component>`)
+- Available components by category (Form, Layout, Overlays, Feedback, Display)
+- Blocks for pre-built UI patterns (`npx shadcn@latest add dashboard-01`)
+- Dark mode setup, forms, and advanced configuration
+
+---
+
 ## Personal Preferences
 
 ### Code Style

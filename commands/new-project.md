@@ -152,6 +152,8 @@ For experiments: Vercel (easy) or Cloudflare Pages (free)
 
 Default: Tailwind + shadcn/ui
 
+**Note:** If shadcn/ui is selected, reference `~/.claude/docs/shadcn-ui.md` or `docs/shadcn-ui.md` for complete component reference with CLI commands.
+
 ### Icon Library
 - **Lucide** - Default with shadcn, clean, MIT license
 - **Heroicons** - Tailwind team, solid choice
