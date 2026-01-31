@@ -116,8 +116,19 @@ export default function EnvVarAssistant() {
           </p>
         </motion.div>
 
-        {/* Main visual flow */}
-        <div className="max-w-6xl mx-auto mb-20">
+        {/* Mockup 1 Label */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          viewport={{ once: true }}
+          className="text-center mb-6"
+        >
+          <span className="text-sm font-medium text-muted-foreground/60">MOCKUP 1: Step Flow</span>
+        </motion.div>
+
+        {/* Mockup 1: Original step-based visual */}
+        <div className="max-w-6xl mx-auto mb-32">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
             {WORKFLOW_STEPS.map((step, index) => (
               <div key={step.id} className="relative">
@@ -166,6 +177,269 @@ export default function EnvVarAssistant() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Mockup 2 Label */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          viewport={{ once: true }}
+          className="text-center mb-6"
+        >
+          <span className="text-sm font-medium text-muted-foreground/60">MOCKUP 2: Data Flow</span>
+        </motion.div>
+
+        {/* Mockup 2: High-speed data flow visualization */}
+        <div className="max-w-5xl mx-auto mb-20">
+          <div className="relative h-80 flex items-center justify-center">
+            {/* Central 1Password Vault */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="relative z-10"
+            >
+              <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-2xl shadow-violet-500/50 border-4 border-violet-400/30">
+                <svg className="w-16 h-16 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="10" r="3" />
+                  <path d="M12 13c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2s2-.9 2-2v-4c0-1.1-.9-2-2-2z" />
+                </svg>
+              </div>
+
+              {/* Pulsing rings */}
+              {!shouldReduceMotion && (
+                <>
+                  <motion.div
+                    animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 rounded-2xl border-2 border-violet-400"
+                  />
+                  <motion.div
+                    animate={{ scale: [1, 2.5, 1], opacity: [0.3, 0, 0.3] }}
+                    transition={{ duration: 2, delay: 0.5, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 rounded-2xl border-2 border-fuchsia-400"
+                  />
+                </>
+              )}
+
+              {/* Center label */}
+              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                <span className="text-sm font-bold text-violet-400">1Password Vault</span>
+              </div>
+            </motion.div>
+
+            {/* Incoming API Key (left) */}
+            <motion.div
+              initial={{ x: -200, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              viewport={{ once: true }}
+              className="absolute left-0 top-1/2 -translate-y-1/2"
+            >
+              <div className="relative">
+                {/* API Key particle */}
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/50">
+                  <span className="text-xs font-mono text-white font-bold">sk-...</span>
+                </div>
+
+                {/* Motion trail */}
+                {!shouldReduceMotion && (
+                  <>
+                    <motion.div
+                      animate={{ scaleX: [0, 1, 0], x: [0, 100, 100] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                      className="absolute left-full top-1/2 -translate-y-1/2 h-1 w-40 bg-gradient-to-r from-cyan-400 to-transparent origin-left"
+                    />
+                    {[...Array(3)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        animate={{ x: [0, 150], opacity: [1, 0] }}
+                        transition={{
+                          duration: 1,
+                          delay: i * 0.3,
+                          repeat: Infinity,
+                          ease: "easeOut"
+                        }}
+                        className="absolute left-full top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-400"
+                        style={{ top: `${50 + (i - 1) * 15}%` }}
+                      />
+                    ))}
+                  </>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-3 text-center">Clipboard</p>
+            </motion.div>
+
+            {/* Outgoing to Platforms (right) */}
+            <motion.div
+              initial={{ x: 200, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              viewport={{ once: true }}
+              className="absolute right-0 top-1/2 -translate-y-1/2"
+            >
+              <div className="relative flex flex-col gap-3">
+                {['Vercel', 'CF', 'AWS'].map((platform, i) => (
+                  <motion.div
+                    key={platform}
+                    initial={{ x: 50, opacity: 0 }}
+                    whileInView={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.9 + i * 0.1 }}
+                    viewport={{ once: true }}
+                    className="relative"
+                  >
+                    <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                      {platform}
+                    </div>
+
+                    {/* Incoming streak */}
+                    {!shouldReduceMotion && (
+                      <motion.div
+                        animate={{ scaleX: [1, 0, 1], x: [-100, 0, -100] }}
+                        transition={{
+                          duration: 1.5,
+                          delay: i * 0.2,
+                          repeat: Infinity,
+                          ease: "linear"
+                        }}
+                        className="absolute right-full top-1/2 -translate-y-1/2 h-1 w-40 bg-gradient-to-l from-green-400 to-transparent origin-right"
+                      />
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-3 text-center">Platforms</p>
+            </motion.div>
+
+            {/* Speed indicators */}
+            {!shouldReduceMotion && (
+              <>
+                {/* Speed streaks background */}
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{
+                      scaleX: [0, 1.5, 0],
+                      opacity: [0, 0.3, 0]
+                    }}
+                    transition={{
+                      duration: 2,
+                      delay: i * 0.3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-400 to-transparent"
+                    style={{ top: `${20 + i * 12}%` }}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+
+          {/* Speed caption */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 1.2 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20">
+              <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span className="text-sm font-semibold text-violet-400">Keys captured and deployed in under 1 second</span>
+            </div>
+          </motion.div>
+
+          {/* Explanatory Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.4 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-5xl mx-auto"
+          >
+            {/* Clipboard Detection Card */}
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl opacity-20 group-hover:opacity-40 blur transition duration-300"></div>
+              <div className="relative bg-card border border-border rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-300">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-1">Instant Detection</h4>
+                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">
+                      <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 motion-safe:animate-pulse"></div>
+                      <span className="text-xs font-medium text-cyan-400">Auto-Capture</span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  The extension monitors your clipboard for API key patterns from 20+ providers. When you copy a key from OpenAI, Anthropic, AWS, or any supported service, it's instantly detected and ready to save.
+                </p>
+              </div>
+            </div>
+
+            {/* 1Password Security Card */}
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-2xl opacity-30 group-hover:opacity-50 blur transition duration-300"></div>
+              <div className="relative bg-card border-2 border-violet-500/30 rounded-2xl p-6 hover:border-violet-500/60 transition-all duration-300 shadow-lg shadow-violet-500/10">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center flex-shrink-0 relative">
+                    <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <circle cx="12" cy="10" r="3" />
+                      <path d="M12 13c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2s2-.9 2-2v-4c0-1.1-.9-2-2-2z" />
+                    </svg>
+                    <div className="absolute -inset-1 rounded-xl border border-violet-400/30 motion-safe:animate-pulse"></div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-1">Fort Knox Security</h4>
+                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20">
+                      <svg className="w-3 h-3 text-violet-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-xs font-medium text-violet-400">Encrypted</span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  All keys are stored in your 1Password vault with end-to-end encryption. Nothing touches browser storage or plain text files. Your secrets stay secret, protected by industry-leading security.
+                </p>
+              </div>
+            </div>
+
+            {/* Platform Deployment Card */}
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl opacity-20 group-hover:opacity-40 blur transition duration-300"></div>
+              <div className="relative bg-card border border-border rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-1">One-Click Deploy</h4>
+                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20">
+                      <svg className="w-3 h-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-xs font-medium text-green-400">Auto-Fill</span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Navigate to Vercel, Cloudflare, Netlify, or GitHub. Click one button and your environment variables are instantly filled from 1Password. No copy-paste. No typos. Just deploy.
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* Feature highlights */}
