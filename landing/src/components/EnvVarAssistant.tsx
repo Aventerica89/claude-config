@@ -1,5 +1,25 @@
 import { motion, useReducedMotion } from 'framer-motion'
 
+// Icon components
+const CopyIcon = () => (
+  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+  </svg>
+)
+
+const KeyholeIcon = () => (
+  <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="10" r="3" />
+    <path d="M12 13c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2s2-.9 2-2v-4c0-1.1-.9-2-2-2z" />
+  </svg>
+)
+
+const LightningIcon = () => (
+  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+  </svg>
+)
+
 // Constants
 const FEATURE_HIGHLIGHTS = [
   { value: '<1s', label: 'Key Detection' },
@@ -24,11 +44,7 @@ const WORKFLOW_STEPS = [
     id: 'copy',
     title: 'Copy Key',
     description: 'Auto-detected from clipboard',
-    icon: (
-      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-      </svg>
-    ),
+    icon: <CopyIcon />,
     bgGradient: 'from-blue-500 to-cyan-500',
     borderHover: 'hover:border-violet-500/50',
     animation: { x: -50, delay: 0.2 },
@@ -37,12 +53,7 @@ const WORKFLOW_STEPS = [
     id: 'store',
     title: 'Secure Storage',
     description: 'Saved to 1Password instantly',
-    icon: (
-      <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
-        <circle cx="12" cy="10" r="3" />
-        <path d="M12 13c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2s2-.9 2-2v-4c0-1.1-.9-2-2-2z" />
-      </svg>
-    ),
+    icon: <KeyholeIcon />,
     bgGradient: 'from-violet-500 to-fuchsia-500',
     borderHover: 'hover:border-violet-500/30',
     animation: { y: 50, delay: 0.4 },
@@ -52,11 +63,7 @@ const WORKFLOW_STEPS = [
     id: 'deploy',
     title: 'Auto-Fill',
     description: 'Deploy to any platform',
-    icon: (
-      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
-    ),
+    icon: <LightningIcon />,
     bgGradient: 'from-green-500 to-emerald-500',
     borderHover: 'hover:border-green-500/50',
     animation: { x: 50, delay: 0.6 },
@@ -65,6 +72,20 @@ const WORKFLOW_STEPS = [
 
 export default function EnvVarAssistant() {
   const shouldReduceMotion = useReducedMotion()
+
+  const particleAnimation = shouldReduceMotion
+    ? {}
+    : {
+        animate: {
+          scale: [1, 1.5, 1],
+          opacity: [0.5, 0, 0.5],
+        },
+        transition: {
+          duration: 2,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        },
+      }
 
   return (
     <section className="py-32 relative overflow-hidden">
@@ -107,27 +128,19 @@ export default function EnvVarAssistant() {
                   viewport={{ once: true }}
                   className="relative"
                 >
-                  <div className={`bg-card ${step.featured ? 'border-2 border-violet-500/50 shadow-xl shadow-violet-500/20 hover:shadow-violet-500/30' : 'border border-border'} rounded-2xl p-8 ${step.borderHover} transition-all duration-300`}>
-                    <div className={`${step.featured ? 'w-20 h-20' : 'w-16 h-16'} rounded-xl bg-gradient-to-br ${step.bgGradient} flex items-center justify-center mb-4 mx-auto relative`}>
+                  <div className={`bg-card rounded-2xl p-8 transition-all duration-300 ${step.borderHover} ${step.featured ? 'border-2 border-violet-500/50 shadow-xl shadow-violet-500/20 hover:shadow-violet-500/30' : 'border border-border'}`}>
+                    <div className={`rounded-xl bg-gradient-to-br flex items-center justify-center mb-4 mx-auto relative ${step.bgGradient} ${step.featured ? 'w-20 h-20' : 'w-16 h-16'}`}>
                       {step.icon}
 
                       {/* Speed particles - only for featured step */}
                       {step.featured && (
                         <motion.div
-                          animate={shouldReduceMotion ? undefined : {
-                            scale: [1, 1.5, 1],
-                            opacity: [0.5, 0, 0.5]
-                          }}
-                          transition={shouldReduceMotion ? undefined : {
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
+                          {...particleAnimation}
                           className="absolute inset-0 rounded-xl bg-violet-500/30 blur-xl"
                         />
                       )}
                     </div>
-                    <h3 className={`${step.featured ? 'text-xl font-bold text-violet-400' : 'text-lg font-semibold'} text-center mb-2`}>
+                    <h3 className={`text-center mb-2 ${step.featured ? 'text-xl font-bold text-violet-400' : 'text-lg font-semibold'}`}>
                       {step.title}
                     </h3>
                     <p className="text-sm text-muted-foreground text-center">
