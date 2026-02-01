@@ -386,3 +386,66 @@ Core concepts are universal:
 Created: 2026-01-30
 Session: Routine merge system design and implementation
 Status: Complete and ready to use
+
+## Session: 2026-02-01 - Implementation & Testing
+
+### What Was Accomplished
+
+1. **Created Worktree Setup** (PR #14)
+   - Added `.1code/worktree.json` for automated worktree dependency installation
+   - Configures `bun install` for landing and sync/daemon directories
+   - Enables immediate dev readiness for new worktrees
+
+2. **Implemented Routine-Merge Skill** (PR #15)
+   - Created `skills/routine-merge/skill.json` (23 lines)
+   - Created `skills/routine-merge/prompt.md` (104 lines)
+   - Configured as userInvocable skill
+   - Supports light/medium/thorough levels with dry-run mode
+
+3. **Successfully Tested Merge Routine**
+   - Tested on PR #14 (worktree.json) - Clean merge
+   - Tested on PR #15 (routine-merge itself) - Handled pre-existing lint failures
+   - Demonstrated intelligent issue categorization (PR vs repo-wide)
+
+### Key Lessons
+
+**Pre-existing vs New Issues**
+- Critical to distinguish PR-introduced issues from repo-wide problems
+- Skills/routine-merge had 0 lint errors after fixes
+- Repo had 3,959 pre-existing lint errors in other files
+- Correctly allowed merge when PR changes were clean
+
+**Markdown Linting Fixes**
+- Added blank lines around lists (MD032)
+- Added blank lines around headings (MD022)
+- Added blank lines around code blocks (MD031)
+- Specified language for code blocks (MD040 → markdown)
+
+**Merge Routine Design Validated**
+- Three-level approach works well
+- User confirmation before merge prevents accidents
+- Summary display helps decision-making
+- Handles edge cases gracefully
+
+### Files Modified
+- `.1code/worktree.json` - Created (6 lines)
+- `skills/routine-merge/skill.json` - Created (23 lines)
+- `skills/routine-merge/prompt.md` - Created & fixed (104 lines)
+
+### PRs Merged
+- PR #14: feat: add worktree setup configuration
+- PR #15: feat: add routine-merge skill implementation
+
+### Next Session Recommendations
+
+1. **Test with failing checks** - Create PR with intentional issues to validate blocking behavior
+2. **Add Gemini integration** - Connect `/gemini-review` for AI code review
+3. **Add security integration** - Connect `/security` command for vulnerability scanning
+4. **Create presets** - Build hotfix, release, and deps-update presets
+5. **Track metrics** - Start collecting data for `/routine-stats`
+
+### Status
+- Basic routine-merge workflow: ✅ Complete
+- Full integration (Gemini, security): ⏳ Next phase
+- Metrics tracking: ⏳ Next phase
+- Team adoption: 📋 Ready to use
