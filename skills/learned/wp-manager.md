@@ -42,12 +42,15 @@
 - [ ] Phase 4: Advanced Features (user management, scheduled syncing, backup coordination, security scanning)
 
 ## Recent Activity
+- 2026-02-01: Merged PR #34 (shadcn dashboard with drag-and-drop)
+  - Added @dnd-kit packages for drag-and-drop
+  - Added Radix UI components (avatar, dropdown, tabs, toggle)
+  - Added Tabler icons and TanStack Table
+  - Fixed Badge component (added warning/success variants)
+  - Fixed Breadcrumb API usage (compositional pattern)
+  - Resolved rebase conflicts, all builds passing
 - 2026-02-01: Merged PR #17 (mask secret key input in WordPress plugin)
-  - Security fix: Changed input type from text to password
-  - Resolved merge conflict with main branch
-  - Used /routine-merge-end workflow
 - 2026-01-31: Merged PR #32 (export Skeleton components)
-- All phases 1-3 complete, ready for Phase 4
 
 ## Next Session
 - Start with: Phase 4 feature selection
