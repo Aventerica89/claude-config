@@ -15,6 +15,7 @@ You are running a smart PR merge routine with configurable review gates.
 ## Arguments Provided
 
 Parse the user's input for:
+
 - `--light` or `-l`: Use light level
 - `--medium` or `-m`: Use medium level (default)
 - `--thorough` or `-t`: Use thorough level
@@ -24,6 +25,7 @@ Parse the user's input for:
 ## Workflow
 
 ### Step 1: Get PR Info
+
 ```bash
 gh pr view --json number,title,state,headRefName,baseRefName
 ```
@@ -31,17 +33,20 @@ gh pr view --json number,title,state,headRefName,baseRefName
 ### Step 2: Run Checks
 
 #### Light Level
+
 1. Check git status
 2. Verify no secrets in code
 3. Check PR is mergeable
 
 #### Medium Level (Default)
+
 1. All Light checks
 2. TypeScript type check (if applicable)
 3. Basic security scan (hardcoded secrets, common vulnerabilities)
 4. Verify tests exist
 
 #### Thorough Level
+
 1. All Medium checks
 2. GitHub Actions status
 3. Full security audit
@@ -50,7 +55,8 @@ gh pr view --json number,title,state,headRefName,baseRefName
 ### Step 3: Show Summary
 
 Display results in this format:
-```
+
+```markdown
 ## Merge Routine Summary
 
 **PR**: #{number} - {title}
