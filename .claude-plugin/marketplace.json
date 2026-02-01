@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-codex",
+  "version": "1.0.0",
+  "description": "Universal Claude Code configuration system with auto-sync across CLI and web",
+  "owner": {
+    "name": "JB",
+    "email": "jb@jbcloud.app"
+  },
+  "plugins": [
+    {
+      "name": "claude-codex",
+      "description": "Universal Claude Code configuration with curated commands, agents, skills, and rules",
+      "source": "./plugins/claude-codex",
+      "category": "productivity"
+    }
+  ]
+}

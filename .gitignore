@@ -23,8 +23,8 @@ settings.local.json
 .env.local
 !.env.example
 
-# Plugins (managed separately)
-plugins/
+# Plugin marketplace structure (required for installation)
+# plugins/claude-codex/ contains symlinks to root content
 
 # Plan files (temporary)
 plans/
