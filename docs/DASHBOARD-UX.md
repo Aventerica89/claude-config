@@ -12,6 +12,27 @@
 
 ---
 
+## Access & Authentication
+
+- **Route**: `/dashboard`
+- **Auth**: Simple PIN code entry (`2389`)
+- **No complex auth** - just basic gate for now
+
+---
+
+## Services to Monitor
+
+| Service | Type | Purpose |
+|---------|------|---------|
+| Vercel | Platform | Deployment status |
+| GitHub | Platform | Repo/PR status |
+| 1Password | Tool | Secrets access |
+| Supabase | Database | DB connection |
+| Cloudflare | Platform | Workers/DNS status |
+| MCPs | Integration | MCP server connections |
+
+---
+
 ## Layout Architecture
 
 ```
