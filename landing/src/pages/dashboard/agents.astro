@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DashboardLayout from '../../components/dashboard/DashboardLayout';
+import AgentsList from '../../components/dashboard/AgentsList';
+---
+
+<BaseLayout title="Agents - Claude Codex Dashboard">
+  <DashboardLayout currentPath="/dashboard/agents" client:load>
+    <AgentsList client:load />
+  </DashboardLayout>
+</BaseLayout>

@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import DashboardLayout from '../../../components/dashboard/DashboardLayout';
+import AgentDetail from '../../../components/dashboard/AgentDetail';
+import { mockAgents, getAgentBySlug } from '../../../lib/agents';
+
+export function getStaticPaths() {
+  return mockAgents.map((agent) => ({
+    params: { slug: agent.slug },
+    props: { agent },
+  }));
+}
+
+const { slug } = Astro.params;
+const { agent } = Astro.props;
+---
+
+<BaseLayout title={`${agent.name} - Claude Codex Dashboard`}>
+  <DashboardLayout currentPath="/dashboard/agents" client:load>
+    <AgentDetail agent={agent} client:load />
+  </DashboardLayout>
+</BaseLayout>
