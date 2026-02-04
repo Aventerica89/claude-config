@@ -34,6 +34,42 @@ git stash list
 git log --oneline -3
 ```
 
+### 1.5. Detect Stale Branches
+
+Prune remote refs and identify branches that need cleanup:
+
+```bash
+# Prune stale remote-tracking references
+git fetch --prune
+
+# Find local branches with deleted remotes
+GONE_BRANCHES=$(git branch -vv | grep ': gone]' | awk '{print $1}')
+
+# Find local branches already merged to main (squash merge detection)
+MERGED_BRANCHES=$(git branch --merged main | grep -v "^\*\|main")
+```
+
+**If stale branches found, warn user:**
+
+```
+Stale Branches Detected
+
+Remote deleted (safe to remove):
+  - claude/add-hero-section-s96YE
+  - fix/old-feature
+
+Already merged to main:
+  - feat/api-keys-ui
+
+Run '/end' to auto-clean, or manually:
+  git branch -D <branch-name>
+```
+
+**Why branches become stale:**
+- **Squash merge:** GitHub creates new commit with different SHA, git doesn't recognize original as merged
+- **Remote deleted:** PR merged with "delete branch on merge" but local copy remains
+- **Worktrees:** Branches linked to worktrees persist even after work is done
+
 ### 2. Read Pause State
 
 Check local pause state:

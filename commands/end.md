@@ -104,6 +104,52 @@ If push fails (no remote, permission issues), show warning but continue.
 
 ---
 
+## Step 0.8: Clean Up Merged Branches
+
+After pushing, clean up stale local branches that have been merged or deleted on remote:
+
+```bash
+# Prune stale remote-tracking refs
+git fetch --prune
+
+# Find local branches with deleted remotes (marked as "gone")
+git branch -vv | grep ': gone]' | awk '{print $1}'
+
+# Find local branches already merged into main
+git branch --merged main | grep -v "^\*\|main"
+```
+
+**Auto-delete stale branches:**
+
+```bash
+# Delete branches whose remotes are gone
+for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do
+  git branch -D "$branch"
+  echo "Deleted stale branch: $branch"
+done
+
+# Delete branches already merged to main (except current and main)
+for branch in $(git branch --merged main | grep -v "^\*\|main"); do
+  git branch -d "$branch"
+  echo "Deleted merged branch: $branch"
+done
+```
+
+**Why this matters:**
+- Squash merges leave orphaned branches (different SHAs)
+- Over time, stale branches accumulate and cause confusion
+- GitHub's "Automatically delete head branches" only deletes remote
+- Local branches need manual cleanup
+
+**Report cleanup:**
+```
+Cleaned up branches:
+  - fix/mobile-ux-improvements (merged)
+  - claude/add-hero-section (remote deleted)
+```
+
+---
+
 ## Step 1: Check Documentation Sync
 
 If the current project has `documentToDocs: true` in its CLAUDE.md or was created with docs.jbcloud.app enabled:
