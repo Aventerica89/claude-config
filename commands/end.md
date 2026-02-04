@@ -104,6 +104,103 @@ If push fails (no remote, permission issues), show warning but continue.
 
 ---
 
+## Step 0.8: Clean Up Merged Branches
+
+After pushing, clean up stale local branches that have been merged or deleted on remote:
+
+```bash
+# Prune stale remote-tracking refs
+git fetch --prune
+
+# Find local branches with deleted remotes (marked as "gone")
+git branch -vv | grep ': gone]' | awk '{print $1}'
+
+# Find local branches already merged into main
+git branch --merged main | grep -v "^\*\|main"
+```
+
+**Auto-delete stale branches:**
+
+```bash
+# Delete branches whose remotes are gone
+for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do
+  git branch -D "$branch"
+  echo "Deleted stale branch: $branch"
+done
+
+# Delete branches already merged to main (except current and main)
+for branch in $(git branch --merged main | grep -v "^\*\|main"); do
+  git branch -d "$branch"
+  echo "Deleted merged branch: $branch"
+done
+```
+
+**Why this matters:**
+- Squash merges leave orphaned branches (different SHAs)
+- Over time, stale branches accumulate and cause confusion
+- GitHub's "Automatically delete head branches" only deletes remote
+- Local branches need manual cleanup
+
+**Report cleanup:**
+```
+Cleaned up branches:
+  - fix/mobile-ux-improvements (merged)
+  - claude/add-hero-section (remote deleted)
+```
+
+### Worktree Cleanup (Safe Mode)
+
+Check for stale worktrees and offer to clean them up:
+
+```bash
+# List all worktrees except main
+git worktree list --porcelain | grep "^worktree" | cut -d' ' -f2- | while read worktree; do
+  # Skip main worktree
+  if [ "$worktree" = "$(pwd)" ]; then continue; fi
+
+  BRANCH=$(git -C "$worktree" branch --show-current 2>/dev/null)
+  UNCOMMITTED=$(git -C "$worktree" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+  OPEN_PRS=$(gh pr list --head "$BRANCH" --state open --json number 2>/dev/null | jq length)
+  LAST_COMMIT_DAYS=$(( ($(date +%s) - $(git -C "$worktree" log -1 --format="%ct" 2>/dev/null || echo 0)) / 86400 ))
+
+  # Only safe if: no uncommitted, no open PRs, older than 7 days
+  if [ "$UNCOMMITTED" = "0" ] && [ "$OPEN_PRS" = "0" ] && [ "$LAST_COMMIT_DAYS" -gt 7 ]; then
+    echo "SAFE: $worktree ($BRANCH)"
+  fi
+done
+```
+
+**Only auto-remove worktrees when ALL conditions met:**
+1. Zero uncommitted changes
+2. Zero open PRs from that branch
+3. Last commit > 7 days ago
+4. User confirms (unless `--auto-clean` flag)
+
+**Cleanup command:**
+```bash
+git worktree remove "$worktree_path"
+# Branch is auto-deleted when worktree is removed (if not checked out elsewhere)
+```
+
+**Report:**
+```
+Worktree Cleanup
+
+  Removed (safe - all work merged):
+    ~/.21st/worktrees/urlstogo/public-clearing (combative-crocodile-13f267)
+
+  Kept (has active work):
+    ~/.21st/worktrees/project/feature-x (uncommitted changes)
+```
+
+**Conservative approach:**
+- NEVER delete worktrees with uncommitted changes
+- NEVER delete worktrees with open PRs
+- ALWAYS show what will be deleted before doing it
+- Default to keeping things if uncertain
+
+---
+
 ## Step 1: Check Documentation Sync
 
 If the current project has `documentToDocs: true` in its CLAUDE.md or was created with docs.jbcloud.app enabled:
