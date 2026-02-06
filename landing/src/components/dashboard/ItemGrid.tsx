@@ -2,6 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import { ItemCard } from './ItemCard'
+import { ItemRow } from './ItemRow'
+import { ItemCardCompact } from './ItemCardCompact'
+import { ViewToggle, type ViewMode } from './ViewToggle'
 import type { BrainItem, BrainItemType } from '@/lib/generated/types'
 
 interface ItemGridProps {
@@ -25,6 +28,7 @@ export function ItemGrid({
 }: ItemGridProps) {
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [viewMode, setViewMode] = useState<ViewMode>('grid')
 
   const categories = useMemo(() => {
     if (externalCategories) return externalCategories
@@ -59,9 +63,12 @@ export function ItemGrid({
           <h1 className="text-2xl font-bold">{title}</h1>
           <p className="text-muted-foreground">{description}</p>
         </div>
-        <span className="text-sm text-muted-foreground">
-          {filtered.length} of {items.length}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted-foreground">
+            {filtered.length} of {items.length}
+          </span>
+          <ViewToggle value={viewMode} onChange={setViewMode} />
+        </div>
       </div>
 
       {/* Search + Filters */}
@@ -100,18 +107,47 @@ export function ItemGrid({
         </div>
       </div>
 
-      {/* Grid */}
+      {/* View Modes */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              onEdit={handleEdit}
-              onDeploy={onDeploy}
-            />
-          ))}
-        </div>
+        <>
+          {viewMode === 'grid' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map((item) => (
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  onEdit={handleEdit}
+                  onDeploy={onDeploy}
+                />
+              ))}
+            </div>
+          )}
+
+          {viewMode === 'list' && (
+            <div className="flex flex-col gap-2">
+              {filtered.map((item) => (
+                <ItemRow
+                  key={item.id}
+                  item={item}
+                  onEdit={handleEdit}
+                  onDeploy={onDeploy}
+                />
+              ))}
+            </div>
+          )}
+
+          {viewMode === 'compact' && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+              {filtered.map((item) => (
+                <ItemCardCompact
+                  key={item.id}
+                  item={item}
+                  onEdit={handleEdit}
+                />
+              ))}
+            </div>
+          )}
+        </>
       ) : (
         <div className="text-center py-12 text-muted-foreground">
           No {type}s found matching your search.
