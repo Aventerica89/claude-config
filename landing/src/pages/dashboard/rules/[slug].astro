@@ -2,12 +2,12 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import DashboardLayout from '../../../components/dashboard/DashboardLayout';
 import { ItemEditor } from '../../../components/dashboard/ItemEditor';
-import { agents } from '../../../lib/generated/agents';
+import { rules } from '../../../lib/generated/rules';
 
 export function getStaticPaths() {
-  return agents.map((agent) => ({
-    params: { slug: agent.slug },
-    props: { itemId: agent.id, name: agent.name },
+  return rules.map((rule) => ({
+    params: { slug: rule.slug },
+    props: { itemId: rule.id, name: rule.name },
   }))
 }
 
@@ -16,7 +16,7 @@ const { itemId, name } = Astro.props;
 ---
 
 <BaseLayout title={`${name} - Claude Codex Dashboard`}>
-  <DashboardLayout currentPath="/dashboard/agents" client:load>
+  <DashboardLayout currentPath="/dashboard/rules" client:load>
     <ItemEditor itemId={itemId} client:load />
   </DashboardLayout>
 </BaseLayout>

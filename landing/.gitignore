@@ -5,6 +5,9 @@ node_modules/
 dist/
 .astro/
 
+# Generated data (rebuild with: node scripts/generate-brain-data.mjs)
+src/lib/generated/
+
 # Environment
 .env
 .env.*

@@ -8,16 +8,14 @@ interface DashboardLayoutProps {
   currentPath: string
 }
 
-const CORRECT_PIN = '2389'
-
 export function DashboardLayout({ children, currentPath }: DashboardLayoutProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [pin, setPin] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [isVerifying, setIsVerifying] = useState(false)
 
   useEffect(() => {
-    // Check if already authenticated in session
     const auth = sessionStorage.getItem('codex-auth')
     if (auth === 'true') {
       setIsAuthenticated(true)
@@ -25,15 +23,31 @@ export function DashboardLayout({ children, currentPath }: DashboardLayoutProps)
     setIsLoading(false)
   }, [])
 
-  const handlePinSubmit = (e: React.FormEvent) => {
+  const handlePinSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (pin === CORRECT_PIN) {
-      setIsAuthenticated(true)
-      sessionStorage.setItem('codex-auth', 'true')
-      setError('')
-    } else {
-      setError('Incorrect PIN')
+    setIsVerifying(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin }),
+      })
+      const data = await res.json()
+
+      if (data.success) {
+        setIsAuthenticated(true)
+        sessionStorage.setItem('codex-auth', 'true')
+      } else {
+        setError('Incorrect PIN')
+        setPin('')
+      }
+    } catch {
+      setError('Verification failed')
       setPin('')
+    } finally {
+      setIsVerifying(false)
     }
   }
 
@@ -75,6 +89,7 @@ export function DashboardLayout({ children, currentPath }: DashboardLayoutProps)
                 placeholder="Enter 4-digit PIN"
                 className="w-full px-4 py-3 bg-card border border-border rounded-xl text-center text-2xl tracking-[0.5em] font-mono focus:outline-none focus:ring-2 focus:ring-violet-500"
                 autoFocus
+                disabled={isVerifying}
               />
               {error && (
                 <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
@@ -83,16 +98,16 @@ export function DashboardLayout({ children, currentPath }: DashboardLayoutProps)
 
             <button
               type="submit"
-              disabled={pin.length !== 4}
+              disabled={pin.length !== 4 || isVerifying}
               className="w-full px-4 py-3 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-600/50 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
             >
-              Access Dashboard
+              {isVerifying ? 'Verifying...' : 'Access Dashboard'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              ← Back to Home
+              Back to Home
             </a>
           </div>
         </div>
