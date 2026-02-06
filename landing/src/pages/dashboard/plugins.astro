@@ -6,6 +6,6 @@ import { PluginsPage } from '../../components/dashboard/PluginsPage';
 
 <BaseLayout title="Plugins - Claude Codex Dashboard">
   <DashboardLayout currentPath="/dashboard/plugins" client:load>
-    <PluginsPage client:load />
+    <PluginsPage client:only="react" />
   </DashboardLayout>
 </BaseLayout>
