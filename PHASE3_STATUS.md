@@ -1,9 +1,10 @@
 # Phase 3: Plugin Detail Pages - Status
 
-## Current Status: 50% Complete
+## Current Status: 80% Complete ✅
 
 **Branch**: `claude/plugin-detail-pages-jXdW2`
 **Started**: 2026-02-06
+**Last Updated**: 2026-02-06 (Build fix)
 **Target**: Full plugin detail view with component selection and installation
 
 ---
@@ -51,8 +52,8 @@
 
 ## ⏳ TODO: Remaining Work
 
-### 5. InstallModal Component
-- **File**: `/landing/src/components/dashboard/InstallModal.tsx` (not created yet)
+### 5. InstallModal Component ✅ COMPLETE
+- **File**: `/landing/src/components/dashboard/InstallModal.tsx`
 - **Needed**:
   - Modal overlay with backdrop
   - Repository selection dropdown (scan ~/.claude/repos or config)
@@ -80,8 +81,9 @@ interface InstallModalProps {
 // - Call onSuccess when done
 ```
 
-### 6. Installation API Endpoint
-- **File**: `/landing/src/pages/api/plugins/install.ts` (not created yet)
+### 6. Installation API Endpoint ✅ COMPLETE
+- **File**: `/landing/src/pages/api/plugins/install.ts`
+- **File**: `/landing/src/pages/api/repositories.ts` (bonus)
 - **Method**: POST
 - **Body**:
   ```json
