@@ -1,5 +1,3 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd landing && npm install",
-  "buildCommand": "cd landing && npm run build && cd .. && mkdir -p .vercel && cp -r landing/.vercel/output .vercel/output"
+  "$schema": "https://openapi.vercel.sh/vercel.json"
 }
