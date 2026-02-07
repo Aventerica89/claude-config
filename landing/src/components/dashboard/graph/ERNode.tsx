@@ -1,10 +1,12 @@
-import { memo } from 'react'
-import { Handle, Position, type NodeProps } from '@xyflow/react'
+import { memo, useCallback } from 'react'
+import { Handle, Position, useReactFlow, type NodeProps } from '@xyflow/react'
 import type { BrainItemType } from '@/lib/generated/types'
 
 export interface ERNodeData {
   label: string
   itemType: BrainItemType
+  brainItemId: string
+  description?: string
   category: string
   meta1Label: string
   meta1Value: string
@@ -47,9 +49,18 @@ const TYPE_STYLES: Record<BrainItemType, {
   },
 }
 
-function ERNodeComponent({ data }: NodeProps) {
+function ERNodeComponent({ id, data }: NodeProps) {
   const nodeData = data as unknown as ERNodeData
   const style = TYPE_STYLES[nodeData.itemType]
+  const { deleteElements } = useReactFlow()
+
+  const handleDelete = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      deleteElements({ nodes: [{ id }] })
+    },
+    [id, deleteElements]
+  )
 
   const highlightRing = nodeData.isHighlighted
     ? 'ring-2 ring-yellow-400/60'
@@ -62,7 +73,7 @@ function ERNodeComponent({ data }: NodeProps) {
     <div
       className={[
         'w-[200px] rounded-lg border bg-card shadow-md',
-        'transition-all duration-150',
+        'transition-all duration-150 group',
         style.borderColor,
         highlightRing,
         selectedRing,
@@ -76,7 +87,7 @@ function ERNodeComponent({ data }: NodeProps) {
 
       {/* Header */}
       <div className={[
-        'px-3 py-2 rounded-t-lg border-b',
+        'px-3 py-2 rounded-t-lg border-b relative',
         style.headerBg,
         style.borderColor,
       ].join(' ')}>
@@ -84,25 +95,52 @@ function ERNodeComponent({ data }: NodeProps) {
           <span className="text-xs font-semibold truncate text-foreground">
             {nodeData.label}
           </span>
-          <span className={[
-            'text-[10px] px-1.5 py-0.5 rounded-full shrink-0',
-            style.badge,
-          ].join(' ')}>
-            {style.badgeText}
-          </span>
+          <div className="flex items-center gap-1 shrink-0">
+            <span className={[
+              'text-[10px] px-1.5 py-0.5 rounded-full',
+              style.badge,
+            ].join(' ')}>
+              {style.badgeText}
+            </span>
+            {/* Delete button - visible on hover */}
+            <button
+              onClick={handleDelete}
+              className={[
+                'opacity-0 group-hover:opacity-100',
+                'w-4 h-4 flex items-center justify-center',
+                'rounded text-muted-foreground hover:text-red-400',
+                'transition-opacity',
+              ].join(' ')}
+              title="Remove from canvas"
+            >
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Metadata fields */}
       <div className="px-3 py-2 space-y-1 text-[11px]">
         <div className="flex justify-between gap-2">
-          <span className="text-muted-foreground">{nodeData.meta1Label}</span>
+          <span className="text-muted-foreground">
+            {nodeData.meta1Label}
+          </span>
           <span className="text-foreground truncate max-w-[110px]">
             {nodeData.meta1Value}
           </span>
         </div>
         <div className="flex justify-between gap-2">
-          <span className="text-muted-foreground">{nodeData.meta2Label}</span>
+          <span className="text-muted-foreground">
+            {nodeData.meta2Label}
+          </span>
           <span className="text-foreground truncate max-w-[110px]">
             {nodeData.meta2Value}
           </span>
