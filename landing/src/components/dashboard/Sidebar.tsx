@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { stats } from '@/lib/generated/stats'
 
@@ -88,28 +89,78 @@ const bottomItems: NavItem[] = [
   },
 ]
 
+const COLLAPSE_KEY = 'codex-sidebar-collapsed'
+
+function getInitialCollapsed(): boolean {
+  if (typeof window === 'undefined') return false
+  return localStorage.getItem(COLLAPSE_KEY) === 'true'
+}
+
 interface SidebarProps {
   currentPath: string
 }
 
 export function Sidebar({ currentPath }: SidebarProps) {
+  const [collapsed, setCollapsed] = useState(getInitialCollapsed)
+
+  const toggle = () => {
+    const next = !collapsed
+    setCollapsed(next)
+    localStorage.setItem(COLLAPSE_KEY, String(next))
+  }
+
   return (
-    <aside className="w-64 h-screen bg-card border-r border-border flex flex-col">
-      {/* Logo */}
-      <div className="p-4 border-b border-border">
-        <a href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
-              <path d="M6 10a6 6 0 0 0 12 0" />
-            </svg>
-          </div>
-          <span className="font-semibold">Claude Codex</span>
-        </a>
+    <aside
+      className={cn(
+        'h-screen bg-card border-r border-border flex flex-col transition-all duration-200',
+        collapsed ? 'w-14' : 'w-64'
+      )}
+    >
+      {/* Logo + collapse toggle */}
+      <div className={cn(
+        'border-b border-border flex items-center',
+        collapsed ? 'px-2 py-4 justify-center' : 'p-4 justify-between'
+      )}>
+        {!collapsed && (
+          <a href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shrink-0">
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
+                <path d="M6 10a6 6 0 0 0 12 0" />
+              </svg>
+            </div>
+            <span className="font-semibold">Claude Codex</span>
+          </a>
+        )}
+        <button
+          onClick={toggle}
+          className={cn(
+            'w-8 h-8 flex items-center justify-center rounded-lg',
+            'text-muted-foreground hover:text-foreground hover:bg-secondary/50',
+            'transition-colors shrink-0'
+          )}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          <svg
+            className={cn(
+              'w-4 h-4 transition-transform duration-200',
+              collapsed && 'rotate-180'
+            )}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+          </svg>
+        </button>
       </div>
 
       {/* Main nav */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav className={cn(
+        'flex-1 space-y-1 overflow-y-auto',
+        collapsed ? 'p-1.5' : 'p-4'
+      )}>
         {navItems.map((item) => {
           const isActive = currentPath === item.href ||
             (item.href !== '/dashboard' && currentPath.startsWith(item.href))
@@ -118,16 +169,23 @@ export function Sidebar({ currentPath }: SidebarProps) {
             <a
               key={item.id}
               href={item.href}
+              title={collapsed ? item.label : undefined}
               className={cn(
-                'flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors',
+                'flex items-center rounded-lg text-sm transition-colors',
+                collapsed
+                  ? 'justify-center p-2.5'
+                  : 'justify-between px-3 py-2',
                 isActive
                   ? 'bg-violet-500/10 text-violet-400 border border-violet-500/20'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
               )}
             >
-              <div className="flex items-center gap-3">
+              <div className={cn(
+                'flex items-center',
+                collapsed ? '' : 'gap-3'
+              )}>
                 <svg
-                  className="w-5 h-5"
+                  className="w-5 h-5 shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -135,9 +193,9 @@ export function Sidebar({ currentPath }: SidebarProps) {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                 </svg>
-                <span>{item.label}</span>
+                {!collapsed && <span>{item.label}</span>}
               </div>
-              {item.count !== undefined && (
+              {!collapsed && item.count !== undefined && (
                 <span className={cn(
                   'text-xs px-2 py-0.5 rounded-full',
                   isActive ? 'bg-violet-500/20' : 'bg-secondary'
@@ -151,7 +209,10 @@ export function Sidebar({ currentPath }: SidebarProps) {
       </nav>
 
       {/* Bottom nav */}
-      <div className="p-4 border-t border-border space-y-1">
+      <div className={cn(
+        'border-t border-border space-y-1',
+        collapsed ? 'p-1.5' : 'p-4'
+      )}>
         {bottomItems.map((item) => {
           const isActive = currentPath === item.href
 
@@ -159,15 +220,19 @@ export function Sidebar({ currentPath }: SidebarProps) {
             <a
               key={item.id}
               href={item.href}
+              title={collapsed ? item.label : undefined}
               className={cn(
-                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
+                'flex items-center rounded-lg text-sm transition-colors',
+                collapsed
+                  ? 'justify-center p-2.5'
+                  : 'gap-3 px-3 py-2',
                 isActive
                   ? 'bg-violet-500/10 text-violet-400'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
               )}
             >
               <svg
-                className="w-5 h-5"
+                className="w-5 h-5 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -175,20 +240,30 @@ export function Sidebar({ currentPath }: SidebarProps) {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
               </svg>
-              <span>{item.label}</span>
+              {!collapsed && <span>{item.label}</span>}
             </a>
           )
         })}
       </div>
 
       {/* Back to home */}
-      <div className="p-4 border-t border-border">
+      <div className={cn(
+        'border-t border-border',
+        collapsed ? 'p-1.5' : 'p-4'
+      )}>
         <a
           href="/"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+          title={collapsed ? 'Back to Home' : undefined}
+          className={cn(
+            'flex items-center rounded-lg text-sm',
+            'text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors',
+            collapsed
+              ? 'justify-center p-2.5'
+              : 'gap-3 px-3 py-2'
+          )}
         >
           <svg
-            className="w-5 h-5"
+            className="w-5 h-5 shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -196,7 +271,7 @@ export function Sidebar({ currentPath }: SidebarProps) {
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          <span>Back to Home</span>
+          {!collapsed && <span>Back to Home</span>}
         </a>
       </div>
     </aside>

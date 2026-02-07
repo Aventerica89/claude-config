@@ -13,7 +13,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
-import type { BrainItemType } from '@/lib/generated/types'
+import type { BrainItem, BrainItemType } from '@/lib/generated/types'
 import {
   generateCommand,
   DEFAULT_CONFIG,
@@ -25,6 +25,7 @@ import { ComponentPalette } from './ComponentPalette'
 import { CommandConfigPanel } from './CommandConfigPanel'
 import { CommandPreview } from './CommandPreview'
 import { WorkflowToolbar } from './WorkflowToolbar'
+import { QuickAddMenu } from './QuickAddMenu'
 
 interface DroppedItem {
   id: string
@@ -34,17 +35,19 @@ interface DroppedItem {
   category: string
 }
 
-function getMetaForType(item: DroppedItem): {
-  meta1Label: string
-  meta1Value: string
-  meta2Label: string
-  meta2Value: string
-} {
+function buildNodeData(item: DroppedItem) {
   return {
+    label: item.name,
+    itemType: item.type,
+    brainItemId: item.id,
+    description: item.description,
+    category: item.category,
     meta1Label: 'Type',
     meta1Value: item.type,
     meta2Label: 'Category',
     meta2Value: item.category || 'general',
+    isHighlighted: false,
+    isSelected: false,
   }
 }
 
@@ -54,18 +57,40 @@ function nextNodeId(): string {
   return `wf-node-${nodeIdCounter}-${Date.now()}`
 }
 
+interface QuickAddState {
+  screenPos: { x: number; y: number }
+  flowPos: { x: number; y: number }
+}
+
 export function WorkflowBuilder() {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
   const [config, setConfig] = useState<CommandConfig>({ ...DEFAULT_CONFIG })
   const [workflowId, setWorkflowId] = useState<string | null>(null)
+  const [quickAdd, setQuickAdd] = useState<QuickAddState | null>(null)
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
-  const reactFlowInstance = useRef<{ screenToFlowPosition: (pos: { x: number; y: number }) => { x: number; y: number } } | null>(null)
+  const rfInstance = useRef<{
+    screenToFlowPosition: (pos: { x: number; y: number }) => { x: number; y: number }
+  } | null>(null)
 
   // Generate markdown from current state
   const markdown = useMemo(
     () => generateCommand(nodes, edges, config),
     [nodes, edges, config]
+  )
+
+  // Add a node at a given flow position
+  const addNodeAtPosition = useCallback(
+    (item: DroppedItem, position: { x: number; y: number }) => {
+      const newNode: Node = {
+        id: nextNodeId(),
+        type: 'erNode',
+        position,
+        data: buildNodeData(item),
+      }
+      setNodes((nds) => [...nds, newNode])
+    },
+    [setNodes]
   )
 
   // Handle edge connections
@@ -101,39 +126,60 @@ export function WorkflowBuilder() {
         return
       }
 
-      const bounds = reactFlowWrapper.current?.getBoundingClientRect()
-      if (!bounds || !reactFlowInstance.current) return
+      if (!reactFlowWrapper.current || !rfInstance.current) return
 
-      const position = reactFlowInstance.current.screenToFlowPosition({
+      const position = rfInstance.current.screenToFlowPosition({
         x: e.clientX,
         y: e.clientY,
       })
 
-      const meta = getMetaForType(item)
-      const newNode: Node = {
-        id: nextNodeId(),
-        type: 'erNode',
-        position,
-        data: {
-          label: item.name,
-          itemType: item.type,
-          brainItemId: item.id,
-          description: item.description,
-          category: item.category,
-          ...meta,
-          isHighlighted: false,
-          isSelected: false,
-        },
-      }
-
-      setNodes((nds) => [...nds, newNode])
+      addNodeAtPosition(item, position)
     },
-    [setNodes]
+    [addNodeAtPosition]
   )
 
-  // Store reactflow instance for screenToFlowPosition
+  // Double-click canvas to open quick-add
+  const onPaneDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (!rfInstance.current || !reactFlowWrapper.current) return
+
+      const bounds = reactFlowWrapper.current.getBoundingClientRect()
+      const screenPos = {
+        x: e.clientX - bounds.left,
+        y: e.clientY - bounds.top,
+      }
+      const flowPos = rfInstance.current.screenToFlowPosition({
+        x: e.clientX,
+        y: e.clientY,
+      })
+
+      setQuickAdd({ screenPos, flowPos })
+    },
+    []
+  )
+
+  // Handle quick-add selection
+  const handleQuickAddSelect = useCallback(
+    (item: BrainItem) => {
+      if (!quickAdd) return
+      addNodeAtPosition(
+        {
+          id: item.id,
+          name: item.name,
+          type: item.type,
+          description: item.description,
+          category: item.category,
+        },
+        quickAdd.flowPos
+      )
+      setQuickAdd(null)
+    },
+    [quickAdd, addNodeAtPosition]
+  )
+
+  // Store reactflow instance
   const onInit = useCallback((instance: unknown) => {
-    reactFlowInstance.current = instance as typeof reactFlowInstance.current
+    rfInstance.current = instance as typeof rfInstance.current
   }, [])
 
   // Toolbar handlers
@@ -148,7 +194,6 @@ export function WorkflowBuilder() {
     setNodes(wf.nodes || [])
     setEdges(wf.edges || [])
     setWorkflowId(wf.id)
-    // Try to extract config from workflow name/description
     setConfig((prev) => ({
       ...prev,
       name: wf.name || '',
@@ -206,6 +251,8 @@ export function WorkflowBuilder() {
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
               onInit={onInit}
+              onPaneClick={() => setQuickAdd(null)}
+              onDoubleClick={onPaneDoubleClick}
               nodeTypes={nodeTypes}
               fitView
               fitViewOptions={{ padding: 0.3 }}
@@ -225,19 +272,28 @@ export function WorkflowBuilder() {
                 showInteractive={false}
               />
               {/* Empty state overlay */}
-              {nodes.length === 0 && (
+              {nodes.length === 0 && !quickAdd && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="text-center space-y-2">
                     <p className="text-muted-foreground text-sm">
-                      Drag components from the left panel
+                      Drag components from the sidebar
                     </p>
                     <p className="text-muted-foreground/60 text-xs">
-                      Connect them to define execution order
+                      or double-click to quick-add
                     </p>
                   </div>
                 </div>
               )}
             </ReactFlow>
+
+            {/* Quick-add menu overlay */}
+            {quickAdd && (
+              <QuickAddMenu
+                position={quickAdd.screenPos}
+                onSelect={handleQuickAddSelect}
+                onClose={() => setQuickAdd(null)}
+              />
+            )}
           </div>
 
           {/* Bottom: Preview */}

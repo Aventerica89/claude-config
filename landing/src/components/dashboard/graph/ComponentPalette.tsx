@@ -3,34 +3,42 @@ import { allItems } from '@/lib/generated'
 import type { BrainItem, BrainItemType } from '@/lib/generated/types'
 import { cn } from '@/lib/utils'
 
-const TYPE_CONFIG: Record<BrainItemType, {
+const TYPE_TABS: {
+  type: BrainItemType
   label: string
   color: string
-  bg: string
-}> = {
-  command: {
-    label: 'Commands',
+  activeBg: string
+  chipBg: string
+}[] = [
+  {
+    type: 'command',
+    label: 'Cmd',
     color: 'text-purple-400',
-    bg: 'bg-purple-500/10 border-purple-500/30',
+    activeBg: 'bg-purple-500/20 border-purple-500/40',
+    chipBg: 'bg-purple-500/10 border-purple-500/30 hover:bg-purple-500/20',
   },
-  agent: {
-    label: 'Agents',
+  {
+    type: 'agent',
+    label: 'Agt',
     color: 'text-emerald-400',
-    bg: 'bg-emerald-500/10 border-emerald-500/30',
+    activeBg: 'bg-emerald-500/20 border-emerald-500/40',
+    chipBg: 'bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20',
   },
-  skill: {
-    label: 'Skills',
+  {
+    type: 'skill',
+    label: 'Skl',
     color: 'text-blue-400',
-    bg: 'bg-blue-500/10 border-blue-500/30',
+    activeBg: 'bg-blue-500/20 border-blue-500/40',
+    chipBg: 'bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20',
   },
-  rule: {
-    label: 'Rules',
+  {
+    type: 'rule',
+    label: 'Rul',
     color: 'text-orange-400',
-    bg: 'bg-orange-500/10 border-orange-500/30',
+    activeBg: 'bg-orange-500/20 border-orange-500/40',
+    chipBg: 'bg-orange-500/10 border-orange-500/30 hover:bg-orange-500/20',
   },
-}
-
-const TYPE_ORDER: BrainItemType[] = ['command', 'agent', 'skill', 'rule']
+]
 
 interface ComponentPaletteProps {
   className?: string
@@ -38,25 +46,28 @@ interface ComponentPaletteProps {
 
 export function ComponentPalette({ className }: ComponentPaletteProps) {
   const [search, setSearch] = useState('')
-  const [collapsed, setCollapsed] = useState<Set<BrainItemType>>(
-    () => new Set()
-  )
+  const [activeType, setActiveType] = useState<BrainItemType>('command')
 
-  const grouped = useMemo(() => {
+  const activeTab = TYPE_TABS.find((t) => t.type === activeType)!
+
+  const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()
-    const result = new Map<BrainItemType, BrainItem[]>()
+    return allItems.filter((item) => {
+      if (item.type !== activeType) return false
+      if (q && !item.name.toLowerCase().includes(q)) return false
+      return true
+    })
+  }, [search, activeType])
 
-    for (const type of TYPE_ORDER) {
-      result.set(type, [])
+  const counts = useMemo(() => {
+    const c: Record<BrainItemType, number> = {
+      command: 0, agent: 0, skill: 0, rule: 0,
     }
-
     for (const item of allItems) {
-      if (q && !item.name.toLowerCase().includes(q)) continue
-      result.get(item.type)!.push(item)
+      c[item.type]++
     }
-
-    return result
-  }, [search])
+    return c
+  }, [])
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
@@ -75,31 +86,37 @@ export function ComponentPalette({ className }: ComponentPaletteProps) {
     e.dataTransfer.effectAllowed = 'move'
   }
 
-  const toggleGroup = (type: BrainItemType) => {
-    setCollapsed((prev) => {
-      const next = new Set(prev)
-      if (next.has(type)) {
-        next.delete(type)
-      } else {
-        next.add(type)
-      }
-      return next
-    })
-  }
-
   return (
     <div className={cn(
-      'w-56 flex flex-col bg-card border-r border-border',
+      'w-52 flex flex-col bg-card border-r border-border',
       className
     )}>
-      {/* Header */}
-      <div className="p-3 border-b border-border">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-          Components
-        </h3>
+      {/* Type tabs */}
+      <div className="flex border-b border-border">
+        {TYPE_TABS.map((tab) => (
+          <button
+            key={tab.type}
+            onClick={() => setActiveType(tab.type)}
+            className={cn(
+              'flex-1 py-2 text-[10px] font-medium border-b-2 transition-colors',
+              activeType === tab.type
+                ? `${tab.color} border-current`
+                : 'text-muted-foreground border-transparent hover:text-foreground'
+            )}
+          >
+            <span className="block">{tab.label}</span>
+            <span className="block text-[9px] opacity-60">
+              {counts[tab.type]}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Search */}
+      <div className="p-2">
         <input
           type="text"
-          placeholder="Search..."
+          placeholder={`Search ${activeTab.label.toLowerCase()}...`}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className={cn(
@@ -111,79 +128,37 @@ export function ComponentPalette({ className }: ComponentPaletteProps) {
         />
       </div>
 
-      {/* Grouped items */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-2">
-        {TYPE_ORDER.map((type) => {
-          const items = grouped.get(type) ?? []
-          const config = TYPE_CONFIG[type]
-          const isCollapsed = collapsed.has(type)
-
-          return (
-            <div key={type}>
-              <button
-                onClick={() => toggleGroup(type)}
-                className={cn(
-                  'w-full flex items-center justify-between',
-                  'px-2 py-1.5 text-xs font-medium rounded-md',
-                  'hover:bg-secondary/50 transition-colors',
-                  config.color
-                )}
-              >
-                <span>{config.label}</span>
-                <span className="flex items-center gap-1">
-                  <span className="text-muted-foreground">
-                    {items.length}
-                  </span>
-                  <svg
-                    className={cn(
-                      'w-3 h-3 transition-transform',
-                      isCollapsed && '-rotate-90'
-                    )}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </button>
-
-              {!isCollapsed && (
-                <div className="mt-1 space-y-0.5">
-                  {items.map((item) => (
-                    <div
-                      key={item.id}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, item)}
-                      className={cn(
-                        'px-2 py-1.5 text-xs rounded-md border',
-                        'cursor-grab active:cursor-grabbing',
-                        'hover:brightness-125 transition-all',
-                        config.bg
-                      )}
-                    >
-                      <span className="text-foreground truncate block">
-                        {item.name}
-                      </span>
-                    </div>
-                  ))}
-                  {items.length === 0 && (
-                    <p className="px-2 py-1 text-xs text-muted-foreground">
-                      No matches
-                    </p>
-                  )}
-                </div>
+      {/* Chips grid */}
+      <div className="flex-1 overflow-y-auto p-2">
+        <div className="flex flex-wrap gap-1">
+          {filtered.map((item) => (
+            <div
+              key={item.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, item)}
+              title={item.description}
+              className={cn(
+                'px-2 py-1 text-[11px] rounded-md border',
+                'cursor-grab active:cursor-grabbing',
+                'transition-colors truncate max-w-full',
+                activeTab.chipBg
               )}
+            >
+              {item.name}
             </div>
-          )
-        })}
+          ))}
+          {filtered.length === 0 && (
+            <p className="text-xs text-muted-foreground p-2 w-full text-center">
+              No matches
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Help text */}
-      <div className="p-3 border-t border-border">
-        <p className="text-[10px] text-muted-foreground leading-relaxed">
-          Drag components onto the canvas to build your command workflow.
+      {/* Help */}
+      <div className="p-2 border-t border-border">
+        <p className="text-[10px] text-muted-foreground leading-relaxed text-center">
+          Drag chips to canvas, or double-click canvas to quick-add
         </p>
       </div>
     </div>
