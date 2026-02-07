@@ -131,6 +131,8 @@ Detailed guidelines are in `~/.claude/rules/`:
 | performance.md | Model selection, context management |
 | env-vars.md | Auto-deploy env vars to platforms |
 | string-length.md | **CRITICAL:** Prevent long string errors, max lengths, extraction patterns |
+| session-start.md | Check branch state at session start |
+| hooks.md | Pre/post tool use hooks, auto-formatting |
 
 ---
 
@@ -175,6 +177,7 @@ Located in `~/.claude/agents/`:
 | refactor-cleaner | Dead code cleanup |
 | doc-updater | Documentation updates |
 | env-deployer | Auto-deploy env vars to platforms |
+| conversation-analyzer | Analyze sessions for hookify rule candidates |
 
 ---
 
@@ -235,31 +238,6 @@ Located in `~/.claude/agents/`:
 1. Identify the long strings in recent changes
 2. Extract them to constants or separate files
 3. Update this rule if new patterns emerge
-
----
-
-## Documentation
-
-Reference docs are in `~/.claude/docs/`:
-
-| Doc File | Contents |
-|----------|----------|
-| shadcn-ui.md | shadcn/ui component library - all components, CLI commands, installation guides |
-| better-auth.md | Better Auth - TypeScript authentication framework, setup, providers, plugins |
-
-**Usage:** When working with shadcn/ui or setting up new projects, reference `~/.claude/docs/shadcn-ui.md` for:
-- Component installation commands (`npx shadcn@latest add <component>`)
-- Available components by category (Form, Layout, Overlays, Feedback, Display)
-- Blocks for pre-built UI patterns (`npx shadcn@latest add dashboard-01`)
-- Dark mode setup, forms, and advanced configuration
-
-**Usage:** When implementing authentication, reference `~/.claude/docs/better-auth.md` for:
-- Installation and environment setup
-- Database adapters (Drizzle, Prisma, MongoDB, SQLite)
-- Email/password and social OAuth authentication
-- Session management (client and server-side)
-- Plugins (2FA, magic link, passkeys, organizations)
-- Framework integrations (Next.js, Astro, Hono, etc.)
 
 ---
 
